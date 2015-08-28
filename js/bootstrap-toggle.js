@@ -33,18 +33,6 @@
 	}
 
 	Toggle.prototype.defaults = function() {
-		if (this.$element.parent().prop('tagName') == 'LABEL') {
-			this.$element.parent().click( function(e) {
-				if (!$(e.toElement).hasClass('toggle-off') &&
-						!$(e.toElement).hasClass('toggle-on') &&
-						!$(e.toElement).hasClass('toggle-handle')) {
-					var $checkbox = $(this)
-						.find('input[type=checkbox][data-toggle^=toggle]').first()
-					$checkbox.bootstrapToggle('toggle')
-					e.preventDefault()
-				}
-			})
-		}
 		return {
 			on: this.$element.attr('data-on') || Toggle.DEFAULTS.on,
 			off: this.$element.attr('data-off') || Toggle.DEFAULTS.off,
@@ -75,6 +63,22 @@
 		var $toggle = $('<div class="toggle btn" data-toggle="toggle">')
 			.addClass( this.$element.prop('checked') ? this._onstyle : this._offstyle+' off' )
 			.addClass(size).addClass(this.options.style)
+
+
+		// Wire click handler to parent if parent is label
+
+		if (this.$element.parent().prop('tagName') == 'LABEL') {
+			this.$element.parent().click( function(e) {
+				if (!$(e.toElement).hasClass('toggle-off') &&
+						!$(e.toElement).hasClass('toggle-on') &&
+						!$(e.toElement).hasClass('toggle-handle')) {
+					var $checkbox = $(this)
+						.find('input[type=checkbox][data-toggle^=toggle]').first()
+					$checkbox.bootstrapToggle('toggle')
+					e.preventDefault()
+				}
+			})
+		}
 
 		this.$element.wrap($toggle)
 		$.extend(this, {
