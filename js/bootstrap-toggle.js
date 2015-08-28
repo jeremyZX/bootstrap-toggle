@@ -64,23 +64,19 @@
 			.append($toggleOn, $toggleOff, $toggleHandle)
 		var $toggle = $('<div class="toggle btn" data-toggle="toggle">')
 			.attr('tabindex', this.$element.attr('tabindex') || 0)
+			.attr("aria-checked", checked ? "true" : "false")
+			.attr("role", "checkbox")
 			.addClass( checked ? this._onstyle : this._offstyle+' off' )
 			.addClass(size).addClass(this.options.style)
 
 
 		// Wire click handler to parent if parent is label
-
 		if (this.$element.parent().prop('tagName') == 'LABEL') {
-			this.$element.parent().click( function(e) {
-				if (!$(e.toElement).hasClass('toggle-off') &&
-						!$(e.toElement).hasClass('toggle-on') &&
-						!$(e.toElement).hasClass('toggle-handle')) {
-					var $checkbox = $(this)
-						.find('input[type=checkbox][data-toggle^=toggle]').first()
-					$checkbox.bootstrapToggle('toggle')
-					e.preventDefault()
-				}
-			})
+			var self = this;
+			this.$element.parent().click(function(e) {
+				self.toggle();
+				e.stopPropagation();
+			});
 		}
 
 		this.$element.wrap($toggle)
@@ -130,17 +126,20 @@
 	Toggle.prototype._toggle = function (checked, silent) {
 		if (this.$element.prop('disabled')) return false
 		this.$toggle.removeClass(this._indeterminatestyle).toggleClass(this._onstyle, checked).toggleClass(this._offstyle + ' off', !checked)
+		this.$toggle.attr("aria-checked", checked);
 		this.setChecked(checked)
 		if (!silent) this.trigger()
 	}
 
 	Toggle.prototype.enable = function () {
 		this.$toggle.removeAttr('disabled')
+		this.$toggle.attr("aria-disabled", false);
 		this.$element.prop('disabled', false)
 	}
 
 	Toggle.prototype.disable = function () {
 		this.$toggle.attr('disabled', 'disabled')
+		this.$toggle.attr("aria-disabled", true);
 		this.$element.prop('disabled', true)
 	}
 
@@ -205,7 +204,7 @@
 		if (e.type != 'keydown' || e.which === 13 || e.which === 32) { // 13 = Return, 32 = Space
 			var $checkbox = $(this).find('input[type=checkbox],input[type=hidden]')
 			$checkbox.bootstrapToggle('toggle')
-			e.preventDefault()
+			e.stopPropagation();
 		}
 	})
 
